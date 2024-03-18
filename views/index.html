@@ -6,10 +6,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
 </head>
 <body>
-    Count {{ .Count }}
+
+    {{ template "form" .}}
+    {{ template "display". }}
+
 </body>
 </html>
 
 {{ end}}
+
+
+{{ block "form" .}} 
+<form hx-swap="outerHTML" hx-post="/contacts"  hx-target="#contact"> 
+    Name: <input type="text" name="name">
+    Email: <input type="text" name="email">
+    <button type="submit" >Create Contact</button>
+</form>
+{{ end }}
+
+
+{{ block "display" . }}
+    <div id="contact" style="display:flex; flex-direction:column">
+        {{ range .Contacts }}
+        <div>
+           Name: <span>{{ .Name }}</span>
+           Email: <span>{{ .Email }}</span>
+        </div>
+        {{end}}
+    </div>
+{{end}}

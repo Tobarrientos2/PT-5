@@ -27,6 +27,33 @@ type Count struct {
 	Count int
 }
 
+type Contact struct {
+	Name  string
+	Email string
+}
+
+type Contacts = []Contact
+
+type Data struct {
+	Contacts Contacts
+}
+
+func newContact(name string, email string) Contact {
+	return Contact{
+		Name:  name,
+		Email: email,
+	}
+}
+
+func newData() Data {
+	return Data{
+		Contacts: []Contact{
+			newContact("Tom", "tobarrientos@gmail.com"),
+			newContact("Alberto", "alberto@gmail.com"),
+		},
+	}
+}
+
 func main() {
 	fmt.Println("Hello World")
 
@@ -36,10 +63,18 @@ func main() {
 
 	e.Renderer = newTemplates()
 
-	count := Count{Count: 0}
+	data := newData()
+
 	e.GET("/", func(c echo.Context) error {
-		count.Count++
-		return c.Render(200, "index.html", count)
+		return c.Render(200, "index", data)
+	})
+
+	e.POST("/contacts", func(c echo.Context) error {
+		name := c.FormValue("name")
+		email := c.FormValue("email")
+
+		data.Contacts = append(data.Contacts, newContact(name, email))
+		return c.Render(200, "display", data)
 	})
 
 	e.Logger.Fatal(e.Start(":3000"))
